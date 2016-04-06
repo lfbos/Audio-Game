@@ -11,16 +11,16 @@ body {
     overflow: hidden;
 }
 
-.scene {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
-
 #game,
 footer {
     width: 320px;
     margin: 0 auto;
+}
+
+.scene {
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }
 
 #menu-scene {
@@ -39,6 +39,7 @@ footer {
     top: 0;
     transition: top 0.3s ease-out;
 }
+
 
 /* Menu Scene Elements */
 
@@ -61,4 +62,39 @@ a[href='#game']:active {
 a[href='#game'] span {
     display: block;
     margin-top: -999px;
+}
+
+
+/* Game Scene Elements */
+
+.hit-line {
+    background: url(../images/hit_line.png) center center no-repeat;
+    position: absolute;
+    width: 50px;
+    height: 50px;
+}
+
+.show {
+    opacity: 1;
+}
+
+.hide {
+    opacity: 0;
+    transition: opacity .2s linear;
+}
+
+#hit-line-1 {
+    left: 35px;
+    top: 335px;
+}
+
+#hit-line-2 {
+    left: 135px;
+    /* 320/2-50/2 */
+    top: 335px;
+}
+
+#hit-line-3 {
+    left: 235px;
+    top: 335px;
 }
