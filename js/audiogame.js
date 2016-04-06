@@ -22,11 +22,20 @@
         // the visual dots drawn on the canvas.
         dots: [],
 
+        totalDotsCount: 0,
+        totalSuccessCount: 0,
+
+        // storing the success count of last 5 results.
+        successCount: 5,
+
+
         // for storing the starting time
         startingTime: 0,
 
         // reference of the dot image
         dotImage: new Image(),
+
+
 
 
         // game init method
@@ -82,6 +91,16 @@
                 if (lineNo === this.dots[i].line && Math.abs(this.dots[i].distance) < 20) {
                     // remove the hit dot from the dots array
                     this.dots.splice(i, 1);
+
+                    // increase the success count
+                    audiogame.successCount += 1;
+
+                    // keep only 5 success count max.
+                    audiogame.successCount = Math.min(5, audiogame.successCount);
+
+                    // increase the total success count
+                    audiogame.totalSuccessCount += 1;
+
                 }
             }
         },
@@ -176,6 +195,35 @@
                     this.dots.splice(i, 1);
                 }
             }
+
+            // check missed dots
+            for (var i = this.dots.length - 1; i >= 0; i--) {
+                if (!audiogame.dots[i].missed &&
+                    audiogame.dots[i].distance < -10) {
+                    // mark the dot as missed if it is not mark before
+                    audiogame.dots[i].missed = true;
+
+                    // reduce the success count
+                    audiogame.successCount -= 1;
+
+                    // reset the success count to 0 if it is lower than 0.
+                    audiogame.successCount = Math.max(0, audiogame.successCount);
+                }
+
+                // remove missed dots after moved to the bottom
+                if (audiogame.dots[i].distance < -100) {
+                    audiogame.dots.splice(i, 1);
+                }
+            }
+
+            // calculate the percentage of the success in last 5 music dots
+            var successPercent = audiogame.successCount / 5;
+
+            // prevent the successPercent to exceed range(fail safe)
+            successPercent = Math.max(0, Math.min(1, successPercent));
+
+            // control the volume of melody based on the success percentages.
+            audiogame.melody.volume = successPercent;
 
             // move the dots
             for (var i = 0, len = this.dots.length; i < len; i++) {
