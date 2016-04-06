@@ -210,7 +210,7 @@
 
         gameloop: function () {
             var canvas = this.canvas;
-            var ctx = this.canvasContext;
+            var ctx = this.canvasContext;            
 
             // show new dots
             // if the game is started
@@ -290,7 +290,7 @@
                 ctx.drawImage(this.dotImage, -this.dotImage.width / 2, -this.dotImage.height / 2);
                 ctx.restore();
             }
-        },
+        }
 
     };
 
@@ -302,7 +302,14 @@
             audiogame.setupLevelData();
             setInterval(audiogame.gameloop.bind(audiogame), 30);
         }
-
-
+        
+        $(audiogame.melody).bind('ended', gameOver);
     });
+
+    // show game over scene on melody ended.
+    function gameOver() {
+        alert('success percent: ' + audiogame.totalSuccessCount / audiogame.totalDotsCount * 100 + '%');        
+    }
+
+
 })(jQuery);
