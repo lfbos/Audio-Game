@@ -14,6 +14,10 @@
 
     var audiogame = {
 
+        // turn on Record Mode to record the level data, which presents as music notes in normal playing mode.
+        // press ";" to output the recorded data into console and copy to the levelData variable.
+        isRecordMode: false,
+
         // an array to store all music notes data.
         musicNotes: [],
 
@@ -47,6 +51,7 @@
             this.initMedia();
             this.handlePlayButton();
             this.initKeyboardListener();
+            this.initTouchAndClick();
         },
         // init medias
         initMedia: function () {
@@ -64,6 +69,21 @@
             this.dotImage.src = "images/dot.png";
         },
 
+        initTouchAndClick: function () {
+            var game = this;
+            $('.hit-line').bind('mousedown touchstart', function () {
+                var line = $(this).data('lineNo') * 1; // parse in int
+                game.hitOnLine(line);
+                return false;
+            });
+
+            $('.hit-line').bind('mouseup touchend', function () {
+                var line = $(this).data('lineNo') * 1; // parse in int
+                $('#hit-line-' + line).removeClass('show');
+                $('#hit-line-' + line).addClass('hide');
+            });
+        },
+
         initKeyboardListener: function () {
             var game = this;
 
@@ -79,6 +99,22 @@
                 var line = e.which - 73;
                 $('#hit-line-' + line).removeClass('show');
                 $('#hit-line-' + line).addClass('hide');
+
+                if (game.isRecordMode) {
+                    // print the stored music notes data when press ";" (186)
+                    if (e.which === 186) {
+                        var musicNotesString = "";
+                        for (var i = 0, len = game.musicNotes.length; i < len; i++) {
+                            musicNotesString += game.musicNotes[i].time + "," + game.musicNotes[i].line + ";";
+                        }
+                        console.log(musicNotesString);
+                    }
+
+                    var currentTime = game.melody.currentTime.toFixed(3);
+                    var note = new MusicNote(currentTime, e.which - 73);
+                    game.musicNotes.push(note);
+                }
+
             });
         },
 
@@ -132,6 +168,10 @@
 
         setupLevelData: function () {
             var notes = this.leveldata.split(";");
+
+            // store the total number of dots
+            audiogame.totalDotsCount = notes.length;
+
 
             // store the total number of dots
             this.totalDotsCount = notes.length;
@@ -258,8 +298,11 @@
     $(function () {
         audiogame.initGame();
 
-        audiogame.setupLevelData();
-        setInterval(audiogame.gameloop.bind(audiogame), 30);
+        if (!audiogame.isRecordMode) {
+            audiogame.setupLevelData();
+            setInterval(audiogame.gameloop.bind(audiogame), 30);
+        }
+
 
     });
 })(jQuery);
